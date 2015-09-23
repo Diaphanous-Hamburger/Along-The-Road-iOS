@@ -11,7 +11,7 @@ import MapKit
 import CoreLocation
 import AddressBook
 
-class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
+class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate, UIGestureRecognizerDelegate {
     
     let venueDetailHelpers = RestaurantTableView()
 
@@ -59,6 +59,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     @IBOutlet weak var venueRatingLabel: UILabel!
     @IBOutlet weak var venueTipLabel: UILabel!
     @IBOutlet weak var venueImage: UIImageView!
+    @IBOutlet weak var venueOpenLabel: UILabel!
+    @IBOutlet weak var rightArrow: UIButton!
     
     
     @IBAction func distanceSliderValueChanged(sender: UISlider) {
@@ -82,13 +84,23 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        rightArrow.imageEdgeInsets = UIEdgeInsetsMake(-10, -10, -10, -10)
+        
+        // reset the venue labels
+        venueNameLabel.text = ""
+        venueOpenLabel.text = ""
+        venueRatingLabel.text = ""
+        venueTipLabel.text = ""
+        venuePriceLabel.text = ""
+        venueCategoryLabel.text = ""
+        
         var distance = routeData.route!.distance as Double
         if routeData.searchRadius > distance/routeData.minDistToRadiusRatio {
             routeData.searchRadius = distance/routeData.minDistToRadiusRatio
             routeData.mapWidth = distance
         }
         
-        
+        distanceSlider.maximumTrackTintColor = UIColor.darkGrayColor()
         
         coreLocationManager.delegate = self
         self.displayLocation()
@@ -124,6 +136,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
             println("SET ACTIVE WP called from viewWillAppear")
             setActiveWaypoint(activeWaypointIdx)
         }
+        self.navigationController?.interactivePopGestureRecognizer.delegate = self;
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        self.navigationController?.interactivePopGestureRecognizer.delegate = nil;
     }
     
     func showListView() {
@@ -144,6 +161,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         if status != CLAuthorizationStatus.NotDetermined || status != CLAuthorizationStatus.Denied || status != CLAuthorizationStatus.Restricted {
             getLocation()
         }
+    }
+    
+    func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return false;
     }
     
     /* function: getLocation
@@ -544,6 +565,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
         venuePriceLabel.text = venueDetailHelpers.getPriceRange(activeRestaurant.priceRange)
         venueRatingLabel.text = "\u{1f3c6} \(venueDetailHelpers.getRating(activeRestaurant.rating))"
         venueTipLabel.text = activeRestaurant.tip
+        venueOpenLabel.text = activeRestaurant.openUntil
+        
+        if (Array(activeRestaurant.openUntil.lowercaseString)[0] == "c") {
+            venueOpenLabel.textColor = UIColor.redColor()
+        } else {
+            venueOpenLabel.textColor = UIColor(red: 50/255, green: 154/255, blue: 119/255, alpha: 1)
+        }
+        
 
         var numFilteredRestaurants = restaurantData.filteredRestaurants.count
     }

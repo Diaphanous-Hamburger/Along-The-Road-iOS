@@ -88,10 +88,11 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         super.viewDidLoad()
         errorLabel.text = ""
         routeData.startingPoint = "Current Location"
-        routeData.destination = "San Jose"
+//        routeData.destination = "San Jose"
     }
     
     override func viewDidAppear(animated: Bool) {
+        
         var nav = navigationController?.navigationBar
         nav?.barTintColor = UIColor(red: 102/255, green: 205/255, blue: 170/255, alpha: 0.1)
         nav?.tintColor = UIColor.whiteColor()
@@ -101,7 +102,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
 //        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 20))
 //        imageView.contentMode = UIViewContentMode.ScaleAspectFit
 //        
-//        let image = UIImage(named: "logo")
+//        let image = UIImage(named: "logo-white")
 //        imageView.image = image
 //        navigationItem.titleView = imageView
         
